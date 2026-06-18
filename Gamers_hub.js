@@ -31,49 +31,78 @@ document.querySelectorAll('a,button,.game-card,.cat-card,.side-card,.stat').forE
   });
 });
 
-// Game data
-const games = [
-  { id:1, title:'SHADOW PROTOCOL', genre:'action', emoji:'🥷', desc:'High-octane stealth action in a dystopian megacity. Infiltrate, eliminate, disappear.', rating:'9.2', badge:'hot' },
-  { id:2, title:'REALM OF ETERNITY', genre:'rpg', emoji:'🧙', desc:'An expansive fantasy RPG with over 200 hours of lore-rich exploration and branching narratives.', rating:'9.5', badge:'top' },
-  { id:3, title:'IRON CITADEL', genre:'strategy', emoji:'🏰', desc:'Build your empire, command armies, and crush your rivals in this award-winning grand strategy.', rating:'9.1', badge:'top' },
-  { id:4, title:'DREAD MANOR', genre:'horror', emoji:'👻', desc:'A psychological horror masterpiece set in a Victorian mansion. Fear has never been so beautiful.', rating:'8.8', badge:'new' },
-  { id:5, title:'NITRO DRIFT X', genre:'racing', emoji:'🏎️', desc:'Push the limits of speed through neon-lit circuits and gravity-defying tracks worldwide.', rating:'8.7', badge:'hot' },
-  { id:6, title:'QUANTUM BREAK', genre:'puzzle', emoji:'🧩', desc:'Bend the laws of physics to solve mind-bending puzzles across fractured dimensions.', rating:'8.4', badge:'new' },
-  { id:7, title:'STELLAR VOID', genre:'action', emoji:'🌌', desc:'Command fleets and forge alliances in an epic open-world space saga that spans galaxies.', rating:'9.4', badge:'top' },
-  { id:8, title:'CURSED LEGACY', genre:'rpg', emoji:'⚔️', desc:'A dark fantasy RPG where your bloodline determines your fate across three epic generations.', rating:'8.9', badge:'new' },
-  { id:9, title:'CHROME RACER', genre:'racing', emoji:'🚗', desc:'Futuristic anti-gravity racing with fully destructible environments and a killer soundtrack.', rating:'8.3', badge:'new' },
-  { id:10, title:'PIXEL JUMP', genre:'platformer', emoji:'🎮', desc:'A retro-inspired platformer with tight controls and devious level design. Pure platforming perfection.', rating:'8.6', badge:'new' },
-  { id:11, title:'SOCCER LEGENDS 26', genre:'sports', emoji:'⚽', desc:'The most realistic soccer simulation ever. Build your dream team and dominate the league.', rating:'8.5', badge:'hot' },
-  { id:12, title:'WARZONE ELITE', genre:'shooter', emoji:'🔫', desc:'Tactical FPS action with destructible environments and strategic team-based gameplay.', rating:'9.0', badge:'hot' },
-  { id:13, title:'NEBULA QUEST', genre:'sci-fi', emoji:'🌌', desc:'Explore alien worlds and uncover ancient technologies in this sci-fi adventure epic.', rating:'8.7', badge:'new' },
-  { id:14, title:'DRAGON KINGDOMS', genre:'fantasy', emoji:'🐉', desc:'Summon mythical beasts and wield powerful magic in this epic fantasy adventure.', rating:'9.2', badge:'top' },
-  { id:15, title:'BEAT MASTER', genre:'rhythm', emoji:'🎵', desc:'Test your rhythm skills with thousands of tracks across every genre. Feel the beat!', rating:'8.8', badge:'hot' },
-];
+// Genre mapping for API
+const genreMap = {
+  'action': 4,
+  'rpg': 5,
+  'strategy': 10,
+  'horror': 40,
+  'racing': 1,
+  'puzzle': 2,
+  'platformer': 83,
+  'sports': 15,
+  'shooter': 3,
+  'sci-fi': 6,
+  'fantasy': 40,
+  'rhythm': 14
+};
 
-function renderCards(filter = 'all') {
+// API-based rendering
+async function renderCardsFromAPI(genre = 'all') {
   const grid = document.getElementById('gamesGrid');
-  const filtered = filter === 'all' ? games : games.filter(g => g.genre === filter);
-  grid.innerHTML = filtered.map(g => `
-    <div class="game-card" data-genre="${g.genre}">
-      <div class="card-thumb-wrap">
-        <div class="card-thumb" style="background:linear-gradient(135deg,rgba(5,5,8,1) 0%,rgba(15,15,30,1) 100%)">${g.emoji}</div>
-        <div class="card-overlay">
-          <button class="play-btn">Explore ▶</button>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="card-genre">${g.genre.toUpperCase()}</div>
-        <div class="card-title">${g.title}</div>
-        <div class="card-desc">${g.desc}</div>
-        <div class="card-meta">
-          <div class="rating">★ ${g.rating}</div>
-          <span class="badge badge-${g.badge}">${g.badge.toUpperCase()}</span>
-        </div>
-      </div>
-    </div>
-  `).join('');
+  grid.innerHTML = '<div style="text-align:center;color:var(--dim);padding:40px;">Loading games...</div>';
 
-  // Re-attach hover for cursor
+  try {
+    let games;
+    if (genre === 'all') {
+      games = await gameAPI.getTrendingGames(20);
+    } else {
+      const genreId = genreMap[genre];
+      if (!genreId) {
+        games = await gameAPI.getTrendingGames(20);
+      } else {
+        games = await gameAPI.getGamesByGenre(genreId, 20);
+      }
+    }
+
+    if (!games || games.length === 0) {
+      grid.innerHTML = '<div style="text-align:center;color:var(--dim);padding:40px;">No games found for this genre</div>';
+      return;
+    }
+
+    grid.innerHTML = games.map(g => {
+      const formatted = gameAPI.formatGameData(g);
+      return `
+        <div class="game-card" data-game-id="${g.id}" data-genre="${g.genres}">
+          <div class="card-thumb-wrap">
+            <img src="${formatted.image}" alt="${formatted.title}" class="card-thumb" loading="lazy" onerror="this.src='https://via.placeholder.com/300x400?text=${encodeURIComponent(formatted.title)}'">
+            <div class="card-overlay">
+              <div class="rating-badge-small">${formatted.rating}%</div>
+              <button class="play-btn">Explore ▶</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-genre">${formatted.genres.split(',')[0].toUpperCase()}</div>
+            <div class="card-title">${formatted.title}</div>
+            <div class="card-desc">${formatted.platforms}</div>
+            <div class="card-meta">
+              <div class="rating">★ ${formatted.metacritic !== 'N/A' ? formatted.metacritic : formatted.rating}</div>
+              <span class="badge badge-new">${new Date(formatted.releaseDate).getFullYear()}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Re-attach hover effects
+    attachGameCardHovers();
+  } catch (error) {
+    console.error('Error rendering games:', error);
+    grid.innerHTML = '<div style="text-align:center;color:var(--dim);padding:40px;">Error loading games</div>';
+  }
+}
+
+function attachGameCardHovers() {
   document.querySelectorAll('.game-card').forEach(el => {
     el.addEventListener('mouseenter', () => {
       ring.style.width = '60px';
@@ -91,10 +120,13 @@ function renderCards(filter = 'all') {
 function filterGames(genre, btn) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  renderCards(genre);
+  renderCardsFromAPI(genre);
 }
 
-renderCards();
+// Initialize with API data on page load
+window.addEventListener('DOMContentLoaded', () => {
+  renderCardsFromAPI('all');
+});
 
 // Scroll animations
 const observer = new IntersectionObserver(entries => {
