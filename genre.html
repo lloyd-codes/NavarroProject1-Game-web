@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Browse a genre in the fictional NEXUS Game Explorer static catalogue.">
+    <meta name="theme-color" content="#0b0d10">
+    <title>Genre | NEXUS Game Explorer</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="games-data.js" defer></script>
+    <script src="site.js" defer></script>
+</head>
+<body id="top" data-page="genre">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="site-header__inner">
+            <a class="brand" href="index.html" aria-label="NEXUS Game Explorer home">
+                <span class="brand__mark" aria-hidden="true">N</span>
+                <span class="brand__name">NEXUS</span>
+            </a>
+
+            <button
+                class="menu-button"
+                id="menuButton"
+                type="button"
+                aria-controls="primaryNav"
+                aria-expanded="false"
+            >
+                <span class="menu-button__icon" aria-hidden="true">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+                <span class="menu-button__label">Menu</span>
+            </button>
+
+            <nav class="primary-nav" id="primaryNav" aria-label="Primary navigation">
+                <a href="index.html">Home</a>
+                <a href="index.html#genres">Genres</a>
+                <a href="index.html#explore">All games</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <noscript>
+            <p class="noscript-message">This demo needs JavaScript to display its local catalogue. No network connection is required.</p>
+        </noscript>
+
+        <section class="genre-hero" aria-labelledby="genreTitle">
+            <div class="genre-hero__inner">
+                <a class="back-link" href="index.html#genres"><span aria-hidden="true">&larr;</span> Back to genres</a>
+                <div class="genre-hero__heading">
+                    <span class="genre-hero__icon" id="genreIcon" aria-hidden="true">N</span>
+                    <div>
+                        <p class="eyebrow">Fictional game catalogue</p>
+                        <h1 id="genreTitle">Genre</h1>
+                    </div>
+                </div>
+                <p class="genre-hero__description" id="genreDescription">Browse games in this genre.</p>
+            </div>
+        </section>
+
+        <section class="section genre-results-section" aria-labelledby="genre-games-heading">
+            <div class="section__inner">
+                <header class="section-heading section-heading--split">
+                    <div>
+                        <p class="eyebrow">Local collection</p>
+                        <h2 id="genre-games-heading">Games in this genre</h2>
+                    </div>
+                    <a class="text-link" href="index.html#explore">Browse all games</a>
+                </header>
+                <p class="results-status" id="genreResults" role="status" aria-live="polite" aria-atomic="true">Loading genre...</p>
+                <div class="games-grid" id="genreGamesGrid"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="site-footer__inner">
+            <p>&copy; <span id="currentYear"></span> NEXUS Game Explorer. A fictional static demo with locally stored catalogue data.</p>
+            <a href="#top">Back to top</a>
+        </div>
+    </footer>
+
+    <dialog class="game-dialog" id="gameDialog" aria-labelledby="dialogTitle" aria-describedby="dialogDescription">
+        <div class="game-dialog__surface">
+            <header class="game-dialog__header">
+                <div class="game-dialog__identity">
+                    <span class="game-dialog__icon" id="dialogIcon" aria-hidden="true"></span>
+                    <div>
+                        <p class="game-dialog__genre" id="dialogGenre">Game</p>
+                        <h2 id="dialogTitle">Game details</h2>
+                    </div>
+                </div>
+                <form method="dialog">
+                    <button class="icon-button" id="dialogClose" type="submit" aria-label="Close game details" title="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </form>
+            </header>
+            <p class="game-dialog__description" id="dialogDescription"></p>
+            <ul class="game-dialog__meta" id="dialogMeta" aria-label="Game details"></ul>
+            <section class="game-dialog__platforms" aria-labelledby="dialog-platforms-heading">
+                <h3 id="dialog-platforms-heading">Platforms</h3>
+                <ul id="dialogPlatforms"></ul>
+            </section>
+        </div>
+    </dialog>
+</body>
+</html>

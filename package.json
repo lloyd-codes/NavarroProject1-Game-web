@@ -1,0 +1,9 @@
+{
+  "name": "nexus-game-explorer-static-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A fully local static game catalogue demo.",
+  "scripts": {
+    "test": "node --test"
+  }
+}

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Explore a curated fictional catalogue in the NEXUS Game Explorer static demo.">
+    <meta name="theme-color" content="#0b0d10">
+    <title>NEXUS Game Explorer</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="games-data.js" defer></script>
+    <script src="site.js" defer></script>
+</head>
+<body id="top" data-page="home">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header site-header--overlay">
+        <div class="site-header__inner">
+            <a class="brand" href="#top" aria-label="NEXUS Game Explorer home">
+                <span class="brand__mark" aria-hidden="true">N</span>
+                <span class="brand__name">NEXUS</span>
+            </a>
+
+            <button
+                class="menu-button"
+                id="menuButton"
+                type="button"
+                aria-controls="primaryNav"
+                aria-expanded="false"
+            >
+                <span class="menu-button__icon" aria-hidden="true">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+                <span class="menu-button__label">Menu</span>
+            </button>
+
+            <nav class="primary-nav" id="primaryNav" aria-label="Primary navigation">
+                <a href="#story">Story</a>
+                <a href="#genres">Genres</a>
+                <a href="#explore">Catalogue</a>
+            </nav>
+
+            <p class="site-status" aria-label="Catalogue status: local demo">
+                <span class="site-status__indicator" aria-hidden="true"></span>
+                Local demo
+            </p>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <noscript>
+            <p class="noscript-message">This demo needs JavaScript to display its local catalogue. No network connection is required.</p>
+        </noscript>
+
+        <section class="hero hero--immersive" aria-labelledby="hero-title">
+            <div class="hero__overlay" aria-hidden="true"></div>
+            <div class="hero__inner">
+                <p class="eyebrow hero__eyebrow">A deliberately fictional catalogue</p>
+                <p class="hero-proof">
+                    <span id="gameCount">0</span> fictional games /
+                    <span id="genreCount">0</span> genres / locally stored
+                </p>
+                <h1 id="hero-title">NEXUS <span class="hero__title-emphasis">Game Explorer</span></h1>
+                <p class="hero__description">Browse a compact, hand-built collection of imaginary games. Nothing here is for sale, and every title, score, and detail exists only to demonstrate the interface.</p>
+
+                <form class="catalogue-search hero-search" id="heroSearchForm" role="search" aria-label="Search the game catalogue">
+                    <label class="sr-only" for="searchInput">Search the catalogue</label>
+                    <div class="search-field">
+                        <span class="search-field__icon" aria-hidden="true"></span>
+                        <input
+                            id="searchInput"
+                            name="game-search"
+                            type="search"
+                            aria-describedby="heroSearchStatus"
+                            placeholder="Search by title, genre, or platform"
+                            autocomplete="off"
+                            spellcheck="false"
+                        >
+                        <button
+                            class="icon-button search-field__clear"
+                            id="clearSearch"
+                            type="button"
+                            aria-label="Clear search"
+                            title="Clear search"
+                            hidden
+                        >
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <button class="button hero-search__submit" type="submit">Explore catalogue</button>
+                    </div>
+                    <p class="hero-search-status" id="heroSearchStatus" role="status" aria-live="polite" aria-atomic="true">Loading the local catalogue...</p>
+                </form>
+            </div>
+        </section>
+
+        <section class="landing-story" id="story" aria-labelledby="story-heading">
+            <div class="landing-story__inner">
+                <header class="landing-story__intro">
+                    <p class="eyebrow">Why this catalogue exists</p>
+                    <h2 class="landing-story__title" id="story-heading">Choose with <span class="landing-story__emphasis">curiosity</span>, not hype.</h2>
+                    <p class="landing-story__lede">NEXUS is a small design exercise for browsing and comparing game concepts. It presents no storefront, account system, downloads, or live community features.</p>
+                </header>
+
+                <ol class="landing-story__principles">
+                    <li class="principle">
+                        <span class="principle__index" aria-hidden="true">01</span>
+                        <div class="principle__content">
+                            <h3 class="principle__title">Fiction first</h3>
+                            <p class="principle__copy">Every game is invented for this demo. Names, descriptions, release years, and platform labels do not describe products you can buy or download.</p>
+                        </div>
+                    </li>
+                    <li class="principle">
+                        <span class="principle__index" aria-hidden="true">02</span>
+                        <div class="principle__content">
+                            <h3 class="principle__title">Editorial signals</h3>
+                            <p class="principle__copy">Scores and badges are made-up presentation cues. They support comparison and emphasis, not real reviews, rankings, or recommendations.</p>
+                        </div>
+                    </li>
+                    <li class="principle">
+                        <span class="principle__index" aria-hidden="true">03</span>
+                        <div class="principle__content">
+                            <h3 class="principle__title">Local by default</h3>
+                            <p class="principle__copy">The catalogue ships with the page and search runs in your browser. There is no sign-in, analytics, tracking, or network request behind the experience.</p>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <section class="section featured-section" id="featured" aria-labelledby="featured-heading">
+            <div class="section__inner">
+                <header class="section-heading">
+                    <p class="eyebrow">Editor pick</p>
+                    <h2 id="featured-heading">Featured from the catalogue</h2>
+                </header>
+
+                <article class="featured-game">
+                    <div class="featured-game__content">
+                        <p class="featured-game__genre" id="featuredGenre">Featured game</p>
+                        <h3 id="featuredTitle">Loading featured game</h3>
+                        <p id="featuredDescription">The featured fictional game will appear here.</p>
+                        <ul class="featured-game__meta" id="featuredMeta" aria-label="Featured game details"></ul>
+                        <button class="button button--primary" id="featuredOpen" type="button">View game details</button>
+                    </div>
+                    <div class="featured-game__art" aria-hidden="true">
+                        <span>N</span>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="section genres-section" id="genres" aria-labelledby="genres-heading">
+            <div class="section__inner">
+                <header class="section-heading section-heading--split">
+                    <div>
+                        <p class="eyebrow">Browse your way</p>
+                        <h2 id="genres-heading">Explore by genre</h2>
+                    </div>
+                    <p>Open a focused catalogue view for each genre.</p>
+                </header>
+                <nav class="categories-grid" id="categoriesGrid" aria-label="Game genres"></nav>
+            </div>
+        </section>
+
+        <section class="section explore-section" id="explore" aria-labelledby="explore-heading">
+            <div class="section__inner">
+                <header class="section-heading section-heading--split">
+                    <div>
+                        <p class="eyebrow">Full collection</p>
+                        <h2 id="explore-heading">Explore the catalogue</h2>
+                    </div>
+                    <p>Filter the local collection, then open any game for its full details.</p>
+                </header>
+
+                <div class="filter-bar" id="filterBar" role="group" aria-label="Filter games by genre"></div>
+                <p class="results-status" id="resultsStatus" tabindex="-1">Loading catalogue...</p>
+                <div class="games-grid" id="gamesGrid"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="site-footer__inner">
+            <p>&copy; <span id="currentYear"></span> NEXUS Game Explorer. A fictional static demo with locally stored catalogue data.</p>
+            <a href="#top">Back to top</a>
+        </div>
+    </footer>
+
+    <dialog class="game-dialog" id="gameDialog" aria-labelledby="dialogTitle" aria-describedby="dialogDescription">
+        <div class="game-dialog__surface">
+            <header class="game-dialog__header">
+                <div class="game-dialog__identity">
+                    <span class="game-dialog__icon" id="dialogIcon" aria-hidden="true"></span>
+                    <div>
+                        <p class="game-dialog__genre" id="dialogGenre">Game</p>
+                        <h2 id="dialogTitle">Game details</h2>
+                    </div>
+                </div>
+                <form method="dialog">
+                    <button class="icon-button" id="dialogClose" type="submit" aria-label="Close game details" title="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </form>
+            </header>
+            <p class="game-dialog__description" id="dialogDescription"></p>
+            <ul class="game-dialog__meta" id="dialogMeta" aria-label="Game details"></ul>
+            <section class="game-dialog__platforms" aria-labelledby="dialog-platforms-heading">
+                <h3 id="dialog-platforms-heading">Platforms</h3>
+                <ul id="dialogPlatforms"></ul>
+            </section>
+        </div>
+    </dialog>
+</body>
+</html>
