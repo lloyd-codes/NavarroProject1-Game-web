@@ -6,6 +6,7 @@
     <meta name="description" content="Enter NEXUS, a fictional game catalogue and interface demo.">
     <meta name="theme-color" content="#0b0d10">
     <title>NEXUS | Enter the Game Explorer</title>
+    <script src="page-transition.js"></script>
     <link rel="stylesheet" href="styles.css">
     <script src="games-data.js" defer></script>
     <script src="lightfall.js" defer></script>
@@ -37,21 +38,16 @@
             </button>
 
             <nav class="primary-nav" id="primaryNav" aria-label="Primary navigation">
-                <a href="catalogue.html">Catalogue</a>
+                <a href="catalogue.html#story">Story</a>
                 <a href="catalogue.html#genres">Genres</a>
-                <a href="catalogue.html#story">About</a>
+                <a href="catalogue.html#explore">All games</a>
             </nav>
-
-            <p class="site-status" aria-label="Catalogue status: local demo">
-                <span class="site-status__indicator" aria-hidden="true"></span>
-                Local demo
-            </p>
         </div>
     </header>
 
     <main id="main-content">
-        <section class="hero hero--immersive" aria-labelledby="hero-title">
-            <div class="lightfall-container" id="lightfall" aria-hidden="true"></div>
+        <section class="hero hero--immersive" data-lightfall-surface aria-labelledby="hero-title">
+            <div class="lightfall-container" id="lightfall" data-lightfall aria-hidden="true"></div>
             <div class="hero__overlay" aria-hidden="true"></div>
             <div class="hero__inner">
                 <p class="eyebrow hero__eyebrow">Your next world starts here</p>

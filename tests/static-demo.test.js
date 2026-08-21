@@ -307,6 +307,12 @@ test("HTML pages expose the renderer contracts", () => {
     for (const id of ids) {
       assert.match(html, new RegExp(`\\bid=["']${id}["']`), `${file} is missing #${id}`);
     }
+    assert.equal(
+      compactText(elementContents(html, "primaryNav")),
+      "Story Genres All games",
+      `${file} should use the shared navigation concept`
+    );
+    assert.doesNotMatch(html, /\bclass=["'][^"']*\bsite-status(?:__indicator)?\b/i);
     assert.doesNotMatch(html, /<style\b/i);
     assert.doesNotMatch(html, /<script(?![^>]*\bsrc=)[^>]*>/i);
     assert.doesNotMatch(html, /\son[a-z]+\s*=/i);
@@ -318,10 +324,10 @@ test("landing page exposes the immersive local-demo composition", () => {
   const html = read("index.html");
 
   assert.match(html, /<header\b[^>]*\bclass=["'][^"']*\bsite-header--overlay\b/i);
-  assert.match(html, /<a\b[^>]*href=["']catalogue\.html["'][^>]*>\s*Catalogue\s*<\/a>/i);
+  assert.match(html, /<a\b[^>]*href=["']catalogue\.html#story["'][^>]*>\s*Story\s*<\/a>/i);
   assert.match(html, /<a\b[^>]*href=["']catalogue\.html#genres["'][^>]*>\s*Genres\s*<\/a>/i);
-  assert.match(html, /<a\b[^>]*href=["']catalogue\.html#story["'][^>]*>\s*About\s*<\/a>/i);
-  assert.match(html, /\bclass=["'][^"']*\bsite-status\b[^"']*["'][^>]*>[\s\S]*?Local demo/i);
+  assert.match(html, /<a\b[^>]*href=["']catalogue\.html#explore["'][^>]*>\s*All games\s*<\/a>/i);
+  assert.doesNotMatch(html, /\bclass=["'][^"']*\bsite-status(?:__indicator)?\b/i);
 
   assert.equal(compactText(elementContents(html, "hero-title")), "NEXUS Game Explorer");
   assert.match(
@@ -340,7 +346,7 @@ test("catalogue page owns the story, discovery, and search experience", () => {
   const html = read("catalogue.html");
 
   assert.doesNotMatch(html, /\bsite-header--overlay\b/i);
-  assert.doesNotMatch(html, /lightfall\.js|\bid=["']lightfall["']/i);
+  assert.doesNotMatch(html, /lightfall\.js|\bid=["']headerLightfall["']/i);
   assert.equal(compactText(elementContents(html, "story-heading")), "Choose with curiosity, not hype.");
   assert.equal((html.match(/\bclass=["']principle["']/g) || []).length, 3);
   assert.match(html, /<h3\b[^>]*>Fiction first<\/h3>/i);
@@ -364,6 +370,7 @@ test("runtime files are local and avoid the removed API path", () => {
     "catalogue.html",
     "genre.html",
     "styles.css",
+    "page-transition.js",
     "lightfall.js",
     "games-data.js",
     "site.js"
@@ -393,7 +400,20 @@ test("runtime files are local and avoid the removed API path", () => {
   assert.match(siteScript, /behavior:\s*prefersReducedMotion\s*\?\s*"auto"\s*:\s*"smooth"/);
   assert.match(siteScript, /resultsStatus\?\.focus\(\{\s*preventScroll:\s*true\s*\}\)/);
 
+  const transitionScript = read("page-transition.js");
+  assert.match(transitionScript, /sessionStorage\.setItem\(/);
+  assert.match(transitionScript, /addEventListener\("click"/);
+  assert.match(transitionScript, /window\.location\.assign\(/);
+  assert.match(transitionScript, /prefers-reduced-motion:\s*reduce/);
+  assert.match(transitionScript, /forced-colors:\s*active/);
+  assert.match(transitionScript, /destinationUrl\.origin !== currentUrl\.origin/);
+  assert.match(transitionScript, /destinationUrl\.pathname === currentUrl\.pathname/);
+  assert.match(transitionScript, /event\.metaKey[\s\S]*event\.ctrlKey[\s\S]*event\.shiftKey/);
+  assert.doesNotMatch(transitionScript, /\.innerHTML\b|\bfetch\s*\(/);
+
   const lightfallScript = read("lightfall.js");
+  assert.match(lightfallScript, /querySelectorAll\(["']\[data-lightfall\]["']\)/);
+  assert.match(lightfallScript, /closest\(["']\[data-lightfall-surface\]["']\)/);
   assert.match(lightfallScript, /getContext\("webgl"/);
   assert.match(lightfallScript, /prefers-reduced-motion:\s*reduce/);
   assert.match(lightfallScript, /forced-colors:\s*active/);
@@ -427,6 +447,8 @@ test("every local page reference and cross-page fragment resolves", () => {
         );
       }
     }
+
+    assert.match(html, /<script\b[^>]*src=["']page-transition\.js["'][^>]*><\/script>/i);
   }
 
   const landingHtml = read("index.html");
@@ -446,7 +468,7 @@ test("critical interactive selectors are styled", () => {
   const css = read("styles.css");
   const selectors = [
     "site-header__inner", "site-header--overlay", "menu-button", "primary-nav",
-    "site-status", "hero__inner", "hero--immersive", "hero-proof",
+    "hero__inner", "hero--immersive", "hero-proof",
     "lightfall-container", "lightfall-canvas", "has-lightfall",
     "hero__title-emphasis", "hero-actions", "hero-cta", "catalogue-search",
     "catalogue-search__submit", "catalogue-search-status", "catalogue-hero",
@@ -460,5 +482,9 @@ test("critical interactive selectors are styled", () => {
   for (const selector of selectors) {
     assert.match(css, new RegExp(`\\.${selector}(?![a-zA-Z0-9_-])`), `Missing .${selector}`);
   }
+  assert.match(css, /html\[data-page-transition=["']covering["']\][\s\S]*::before/);
+  assert.match(css, /html\[data-page-transition=["']revealing["']\][\s\S]*::before/);
+  assert.match(css, /@keyframes\s+nexus-curtain-cover-forward/);
+  assert.match(css, /@keyframes\s+nexus-curtain-reveal-backward/);
   assert.match(css, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
 });

@@ -3,10 +3,18 @@
 (function () {
   "use strict";
 
-  const container = document.getElementById("lightfall");
-  const hero = container?.closest(".hero");
+  const containers = document.querySelectorAll("[data-lightfall]");
 
-  if (!container || !hero) {
+  if (!containers.length) {
+    return;
+  }
+
+  containers.forEach(initializeLightfall);
+
+  function initializeLightfall(container) {
+  const surface = container.closest("[data-lightfall-surface]");
+
+  if (!surface) {
     return;
   }
 
@@ -325,7 +333,7 @@
 
     if (!hasRendered) {
       hasRendered = true;
-      hero.classList.add("has-lightfall");
+      surface.classList.add("has-lightfall");
     }
   }
 
@@ -441,8 +449,8 @@
     syncAnimation();
   }
 
-  hero.addEventListener("pointermove", handlePointerMove, { passive: true });
-  hero.addEventListener("pointerleave", handlePointerLeave, { passive: true });
+  surface.addEventListener("pointermove", handlePointerMove, { passive: true });
+  surface.addEventListener("pointerleave", handlePointerLeave, { passive: true });
   document.addEventListener("visibilitychange", syncAnimation);
 
   if (typeof reducedMotion.addEventListener === "function") {
@@ -469,15 +477,16 @@
       isVisible = entries[0]?.isIntersecting ?? true;
       syncAnimation();
     });
-    visibilityObserver.observe(hero);
+    visibilityObserver.observe(surface);
   }
 
   canvas.addEventListener("webglcontextlost", () => {
     contextAvailable = false;
     stopAnimation();
-    hero.classList.remove("has-lightfall");
+    surface.classList.remove("has-lightfall");
   }, { once: true });
 
   resize();
   syncAnimation();
+  }
 }());

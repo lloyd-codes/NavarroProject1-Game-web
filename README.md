@@ -14,6 +14,7 @@ catalogue data and the hero image are stored in this repository.
 - `catalogue.html` - story, search, filters, featured title, and genre links
 - `genre.html` - reusable genre view driven by the `genre` query parameter
 - `styles.css` - shared responsive and accessible styling
+- `page-transition.js` - dependency-free curtain transitions for internal page navigation
 - `lightfall.js` - local WebGL landing-page background with reduced-motion support
 - `games-data.js` - fictional catalogue and genre definitions
 - `site.js` - shared rendering and interaction logic
