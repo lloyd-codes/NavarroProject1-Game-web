@@ -221,25 +221,55 @@
     }
   }
 
-  function initializeHome() {
-    const heroSearchForm = byId("heroSearchForm");
-    const searchInput = byId("searchInput");
-    const clearSearch = byId("clearSearch");
+  function initializeLanding() {
+    setText("gameCount", data.games.length);
+    setText("genreCount", data.genres.length);
+  }
+
+  function initializeCatalogue() {
+    const catalogueSearchForm = byId("catalogueSearchForm");
+    const searchInput = byId("catalogueSearchInput");
+    const clearSearch = byId("clearCatalogueSearch");
     const filterBar = byId("filterBar");
     const gamesGrid = byId("gamesGrid");
     const resultsStatus = byId("resultsStatus");
-    const heroSearchStatus = byId("heroSearchStatus");
+    const catalogueSearchStatus = byId("catalogueSearchStatus");
     const exploreSection = byId("explore");
     let activeGenre = "all";
-    let query = "";
+    let query = new URLSearchParams(window.location.search).get("q") || "";
 
     setText("gameCount", data.games.length);
     setText("genreCount", data.genres.length);
     renderCategories();
     renderFeatured();
 
+    if (searchInput) {
+      searchInput.value = query;
+    }
+
+    const syncQueryUrl = () => {
+      if (!window.history || typeof window.history.replaceState !== "function") {
+        return;
+      }
+
+      try {
+        const nextUrl = new URL(window.location.href);
+        const normalizedQuery = query.trim();
+
+        if (normalizedQuery) {
+          nextUrl.searchParams.set("q", normalizedQuery);
+        } else {
+          nextUrl.searchParams.delete("q");
+        }
+
+        window.history.replaceState(null, "", nextUrl.href);
+      } catch (_error) {
+        // Some browsers restrict history updates for directly opened local files.
+      }
+    };
+
     const updateResults = () => {
-      const normalizedQuery = query.trim().toLocaleLowerCase();
+      const normalizedQuery = query.trim().toLowerCase();
       const matchingGames = data.games.filter((game) => {
         const matchesGenre = activeGenre === "all" || game.genre === activeGenre;
         const searchableText = [
@@ -247,7 +277,7 @@
           game.description,
           genreName(game.genre),
           ...game.platforms
-        ].join(" ").toLocaleLowerCase();
+        ].join(" ").toLowerCase();
         const matchesQuery = !normalizedQuery || searchableText.includes(normalizedQuery);
 
         return matchesGenre && matchesQuery;
@@ -258,8 +288,8 @@
       if (resultsStatus) {
         const gameLabel = matchingGames.length === 1 ? "game" : "games";
         resultsStatus.textContent = `Showing ${matchingGames.length} demo ${gameLabel}.`;
-        if (heroSearchStatus) {
-          heroSearchStatus.textContent = query.trim()
+        if (catalogueSearchStatus) {
+          catalogueSearchStatus.textContent = query.trim()
             ? `${matchingGames.length} matching demo ${gameLabel}. Results are listed in Explore.`
             : `${matchingGames.length} demo ${gameLabel} available in the current filter.`;
         }
@@ -298,12 +328,14 @@
 
     searchInput?.addEventListener("input", () => {
       query = searchInput.value;
+      syncQueryUrl();
       updateResults();
     });
 
-    heroSearchForm?.addEventListener("submit", (event) => {
+    catalogueSearchForm?.addEventListener("submit", (event) => {
       event.preventDefault();
       query = searchInput?.value || "";
+      syncQueryUrl();
       updateResults();
 
       const prefersReducedMotion = typeof window.matchMedia === "function"
@@ -325,6 +357,7 @@
         searchInput.value = "";
         searchInput.focus();
       }
+      syncQueryUrl();
       updateResults();
     });
 
@@ -339,21 +372,21 @@
       "genreDescription",
       requestedGenre
         ? `The local demo catalogue does not include "${requestedGenre}".`
-        : "Choose one of the genres from the main catalogue."
+        : "Choose one of the genres from the catalogue page."
     );
     setText("genreResults", "No demo games to show.");
 
     const grid = byId("genreGamesGrid");
     if (grid) {
       const state = makeElement("div", "empty-state");
-      const title = makeElement("h2", "empty-title", "That genre is unavailable");
+      const title = makeElement("h3", "empty-title", "That genre is unavailable");
       const description = makeElement(
         "p",
         "empty-description",
-        "This static demo only includes the twelve genres listed on the home page."
+        "This static demo only includes the twelve genres listed on the catalogue page."
       );
       const homeLink = makeElement("a", "home-link", "Return to the catalogue");
-      homeLink.href = "index.html";
+      homeLink.href = "catalogue.html";
       state.append(title, description, homeLink);
       grid.replaceChildren(state);
     }
@@ -361,7 +394,7 @@
 
   function initializeGenre() {
     const parameters = new URLSearchParams(window.location.search);
-    const requestedGenre = (parameters.get("genre") || "").trim().toLocaleLowerCase();
+    const requestedGenre = (parameters.get("genre") || "").trim().toLowerCase();
     const genre = genreBySlug.get(requestedGenre);
 
     if (!genre) {
@@ -386,8 +419,10 @@
     initializeMenu();
     initializeDialog();
 
-    if (document.body.dataset.page === "home") {
-      initializeHome();
+    if (document.body.dataset.page === "landing") {
+      initializeLanding();
+    } else if (document.body.dataset.page === "catalogue") {
+      initializeCatalogue();
     } else if (document.body.dataset.page === "genre") {
       initializeGenre();
     }

@@ -10,12 +10,15 @@ catalogue data and the hero image are stored in this repository.
 
 ## Project structure
 
-- `index.html` - homepage, search, filters, featured title, and genre links
+- `index.html` - dedicated Lightfall landing page and catalogue entry points
+- `catalogue.html` - story, search, filters, featured title, and genre links
 - `genre.html` - reusable genre view driven by the `genre` query parameter
 - `styles.css` - shared responsive and accessible styling
+- `lightfall.js` - local WebGL landing-page background with reduced-motion support
 - `games-data.js` - fictional catalogue and genre definitions
 - `site.js` - shared rendering and interaction logic
 - `assets/nexus-hero.jpg` - local hero artwork
+- `THIRD_PARTY_NOTICES.md` - source and license notice for the background effect
 - `tests/static-demo.test.js` - dependency-free catalogue and integration checks
 
 Run `npm.cmd test` in Windows PowerShell, or `npm test` in other shells, to
